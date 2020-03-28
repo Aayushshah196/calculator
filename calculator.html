@@ -1,0 +1,184 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Calculator</title>
+    <style>
+        #container {
+            height:540px;
+            width:320px;
+            background-color:azure;
+            color:black;
+            font:"Open Sans",sans-seriff;
+            border-radius:6px;
+            position:relative;
+            margin:auto;
+        }
+        #keyboard{
+            height:379px;
+            width:320px;
+            border:2px solid black;
+        }
+        button{
+            border-radius:2px;
+        }
+        #result{
+            height:160px;
+            width:320px; 
+            border:2px solid black;
+        }
+        #history{
+            height:70px;
+            padding:6px;
+            align-content:right;
+        }
+        #output{
+            height:70px;
+            padding:6px;
+            align-content:right;
+        }
+        .operator,.number,.hidden{
+            border-radius:50%;
+            height:60px;
+            width:60px;
+            border-width:0px;
+            margin:8px;
+            float:left;
+            font-weight:bold;
+            font-size:15px;
+
+        }
+        #/{
+            background-color:red;
+        }
+        #*{
+            background-color:blue;
+        }
+        #+{
+            background-color:forestgreen;
+        }
+        #-{
+            background-color:palevioletred;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="calc">
+            <div id="result">
+                <div id="history">
+                    <p id="hvalue"></p>
+                </div>
+                <div id="output">
+                    <p id="ovalue"></p>
+                </div>
+            </div>
+            <div id="keyboard">
+                <button class="operator" id="clear">C</button>
+                <button class="operator" id="del">Del</button>
+                <button class="operator" id="%">%</button>
+                <button class="operator" id="/">&#247;</button>
+                <button class="number" id="7">7</button>
+                <button class="number" id="8">8</button>
+                <button class="number" id="9">9</button>
+                <button class="operator" id="*">&times;</button><br />
+                <button class="number" id="4">4</button>
+                <button class="number" id="5">5</button>
+                <button class="number" id="6">6</button>
+                <button class="operator" id="+">+</button><br />
+                <button class="number" id="1">1</button>
+                <button class="number" id="2">2</button>
+                <button class="number" id="3">3</button>
+                <button class="operator" id="-">-</button><br />
+                  <button class="hidden"></button>
+                <button class="number" id="0">0</button>
+                <button class="number" id=".">.</button>
+                <button class="operator" id="=">=</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getHistory(){
+	return document.getElementById("hvalue").innerText;
+}
+function printHistory(num){
+	document.getElementById("hvalue").innerText=num;
+}
+function getOutput(){
+	return document.getElementById("ovalue").innerText;
+}
+function printOutput(num){
+	if(num==""){
+		document.getElementById("ovalue").innerText=num;
+	}
+	else{
+		document.getElementById("ovalue").innerText=getFormattedNumber(num);
+	}	
+}
+function getFormattedNumber(num){
+	if(num=="-"){
+		return "";
+	}
+	var n = Number(num);
+	var value = n.toLocaleString("en");
+	return value;
+}
+function reverseNumberFormat(num){
+	return Number(num.replace(/,/,''));
+}
+var operator = document.getElementsByClassName("operator");
+for(var i =0;i<operator.length;i++){
+	operator[i].addEventListener('click',function(){
+		if(this.id=="clear"){
+			printHistory("");
+			printOutput("");
+		}
+		else if(this.id=="del"){
+			var output=reverseNumberFormat(getOutput()).toString();
+			if(output){//if output has a value
+				output= output.substr(0,output.length-1);
+				printOutput(output);
+			}
+		}
+		else{
+			var output=getOutput();
+			var history=getHistory();
+			if(output==""&&history!=""){
+				if(isNaN(history[history.length-1])){
+					history= history.substr(0,history.length-1);
+				}
+			}
+			if(output!="" || history!=""){
+				output= output==""?output:reverseNumberFormat(output);
+				history=history+output;
+				if(this.id=="="){
+					var result=eval(history);
+					printOutput(result);
+					printHistory("");
+				}
+				else{
+					history=history+this.id;
+					printHistory(history);
+					printOutput("");
+				}
+			}
+		}
+		
+	});
+}
+var number = document.getElementsByClassName("number");
+for(var i =0;i<number.length;i++){
+	number[i].addEventListener('click',function(){
+		var output=reverseNumberFormat(getOutput());
+		if(output!=NaN){ //if output is a number
+			output=output+this.id;
+			printOutput(output);
+		}
+	});
+}
+
+    </script>
+</body>
+</html>
